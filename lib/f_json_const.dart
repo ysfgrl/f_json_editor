@@ -4,14 +4,13 @@ const _space = 18.0;
 const _expandIconWidth = 10.0;
 const _rowPadding = 5.0;
 const _textSpacer = SizedBox(width: 5);
-const _newKey = "new_key_added";
 const _itemArrowDown = SizedBox(
   width: 10,
-  child: Icon(CupertinoIcons.arrowtriangle_down_fill, size: 14),
+  child: Icon(Icons.keyboard_arrow_down_outlined, size: 16),
 );
 const _itemArrowRight = SizedBox(
   width: 10,
-  child: Icon(CupertinoIcons.arrowtriangle_right_fill, size: 14),
+  child: Icon(Icons.keyboard_arrow_right_outlined, size: 16),
 );
 
 enum FJSONMenuOptions { map, list, string, number, bool,  delete }

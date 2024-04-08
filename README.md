@@ -52,3 +52,8 @@ FJSONEditor(
 
 # License
 
+[@licence](https://github.com/ysfgrl/f_json_editor/blob/master/LICENSE)
+
+# Reference
+
+[@SanjaySodani](https://github.com/SanjaySodani)
