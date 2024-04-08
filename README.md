@@ -1,20 +1,54 @@
+
 # f_json_editor
-<<<<<<< HEAD
-Flutter json editor and json viewer
-=======
 
-A new Flutter project.
+## Getting started
 
-## Getting Started
+```yaml
+dependencies:
+    f_json_editor: ^1.0.0
+```
 
-This project is a starting point for a Flutter application.
+## Usage
 
-A few resources to get you started if this is your first Flutter project:
+```dart
+import 'package:f_json_editor/f_json_editor.dart';
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+FJSONEditor(
+    title: Text("FJSON Example"),
+    actionCallback: (actionKey, jsonData) async {
+        if(actionKey == "copy"){
+            await Clipboard.setData(
+            ClipboardData(text: jsonEncode(jsonData)),
+            );
+        }
+    },
+    topActions: [
+        FJSONAction(
+            key: "copy",
+            icon: Icon(Icons.copy, size: 20),
+            label: "Copyy"
+        ),
+        FJSONAction(
+            key: "save",
+            icon: Icon(Icons.save, size: 20),
+            label: "Save"
+        )
+    ],
+    isEditable: true,
+    jsonData: {
+        "key1":"value1",
+        "key2":2,
+        "key3": {
+            "key4": "value4",
+            "key5": false,
+            "key6": [
+                "1",
+                "iki"
+                ]
+        }
+    },
+)
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
->>>>>>> first commit
+# License
+
