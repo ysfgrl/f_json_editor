@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         label: "Save"
                     )
                   ],
-                  isEditable: true,
+                  isEditable: false,
                   jsonData: {
                     "key1":"value1",
                     "key2":2,

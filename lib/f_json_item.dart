@@ -155,7 +155,11 @@ class _FJSONItemState extends State<FJSONItem> {
             child: Row(
               children: [
                 const SizedBox(width: _expandIconWidth),
-                menu,
+                if(widget.isEditable)
+                  menu
+                else
+                  const Icon(Icons.more_horiz, size: 16)
+                  ,
                 SizedBox(width: widget.paddingLeft),
                 InkWell(
                   hoverColor: Colors.transparent,
@@ -210,7 +214,11 @@ class _FJSONItemState extends State<FJSONItem> {
             child: Row(
               children: [
                 const SizedBox(width: _expandIconWidth),
-                menu,
+                if(widget.isEditable)
+                  menu
+                else
+                  const Icon(Icons.more_horiz, size: 16)
+                ,
                 SizedBox(width: widget.paddingLeft),
                 InkWell(
                   hoverColor: Colors.transparent,
@@ -250,7 +258,11 @@ class _FJSONItemState extends State<FJSONItem> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(width: _expandIconWidth),
-          menu,
+          if(widget.isEditable)
+            menu
+          else
+            const Icon(Icons.more_horiz, size: 16)
+          ,
           SizedBox(
             width: widget.paddingLeft + (_expandIconWidth * 2),
           ),
