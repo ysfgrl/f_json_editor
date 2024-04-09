@@ -35,39 +35,46 @@ class _FJSONItemState extends State<FJSONItem> {
     });
   }
 
-  void onValueChanged(dynamic key, dynamic val){
-    widget.data[key] = val;
-    setState(() {});
+  void onValueChanged(dynamic key, dynamic val, bool toParent){
+    if(!toParent){
+      widget.data[key] = val;
+      setState(() {});
+    }
+    widget.valueChanged("${widget.itemKey}.$key", val, true);
   }
 
-  void onKeyChanged(String oldKey, String newKey){
+  void onKeyChanged(String oldKey, String newKey, bool toParent){
+    if(!toParent){
       dynamic val = widget.data.remove(oldKey);
       widget.data[newKey] = val;
       setState(() { });
+    }
+    widget.keyChanged("${widget.itemKey}.$oldKey", newKey, true);
   }
 
-  void subItemMenuEvent(FJSONMenuOptions selectedItem, dynamic key) {
-    debugPrint("menuEvent:${selectedItem.toString()} => ${widget.itemKey} => $key");
-    switch (selectedItem) {
-      case FJSONMenuOptions.delete:
-        if (widget.data is Map) {
-          widget.data.remove(key);
-        } else {
-          widget.data.removeAt(key);
-        }
-        break;
-      default:
-        break;
-    }
-    setState(() {
+  void subItemMenuEvent(FJSONMenuOptions selectedItem, dynamic key, bool toParent) {
+    if(!toParent) {
+      switch (selectedItem) {
+        case FJSONMenuOptions.delete:
+          if (widget.data is Map) {
+            widget.data.remove(key);
+          } else {
+            widget.data.removeAt(key);
+          }
+          break;
+        default:
+          break;
+      }
+      setState(() {
 
-    });
+      });
+    }
+    widget.menuEvent(selectedItem, "${widget.itemKey}.$key", true);
   }
   void menuEvent(FJSONMenuOptions selectedItem) {
-    debugPrint("menuEvent:${selectedItem.toString()} => ${widget.itemKey}");
     switch(selectedItem){
       case FJSONMenuOptions.delete:
-        widget.menuEvent(selectedItem, widget.itemKey);
+        widget.menuEvent(selectedItem, widget.itemKey, false);
         break;
       case FJSONMenuOptions.string:
         if(widget.data is Map){
@@ -75,6 +82,7 @@ class _FJSONItemState extends State<FJSONItem> {
         }else if(widget.data is List){
           widget.data.add("");
         }
+        widget.menuEvent(selectedItem, widget.itemKey, true);
         break;
       case FJSONMenuOptions.number:
         if(widget.data is Map){
@@ -82,6 +90,7 @@ class _FJSONItemState extends State<FJSONItem> {
         }else if(widget.data is List){
           widget.data.add(0);
         }
+        widget.menuEvent(selectedItem, widget.itemKey, true);
         break;
       case FJSONMenuOptions.bool:
         if(widget.data is Map){
@@ -89,6 +98,7 @@ class _FJSONItemState extends State<FJSONItem> {
         }else if(widget.data is List){
           widget.data.add(false);
         }
+        widget.menuEvent(selectedItem, widget.itemKey, true);
         break;
       case FJSONMenuOptions.map:
         if(widget.data is Map){
@@ -96,12 +106,14 @@ class _FJSONItemState extends State<FJSONItem> {
         }else if(widget.data is List){
           widget.data.add({});
         }
+        widget.menuEvent(selectedItem, widget.itemKey, true);
       case FJSONMenuOptions.list:
         if(widget.data is Map){
           widget.data["newKey"] = [];
         }else if(widget.data is List){
           widget.data.add([]);
         }
+        widget.menuEvent(selectedItem, widget.itemKey, true);
         break;
       default:
         break;
@@ -109,48 +121,13 @@ class _FJSONItemState extends State<FJSONItem> {
     setState(() {
 
     });
-    // widget.parentState(() {
-    //
-    // },);
-    // if (selectedItem == _OptionItems.delete) {
-    //   if (widget.parentObject is Map) {
-    //     widget.parentObject.remove(widget.keyName);
-    //   } else {
-    //     widget.parentObject.removeAt(widget.keyName);
-    //   }
-    //
-    //   widget.setState(() {});
-    // } else if (selectedItem == _OptionItems.map) {
-    //   if (widget.data is Map) {
-    //     widget.data[_newKey] = {};
-    //   } else {
-    //     widget.data.add({});
-    //   }
-    //
-    //   setState(() {});
-    // } else if (selectedItem == _OptionItems.list) {
-    //   if (widget.data is Map) {
-    //     widget.data[_newKey] = [];
-    //   } else {
-    //     widget.data.add([]);
-    //   }
-    //
-    //   setState(() {});
-    // } else {
-    //   if (widget.data is Map) {
-    //     widget.data[_newKey] = _newDataValue[selectedItem];
-    //   } else {
-    //     widget.data.add(_newDataValue[selectedItem]);
-    //   }
-    //
-    //   setState(() {});
-    // }
-
-    // widget.onChanged();
   }
 
   @override
   Widget build(BuildContext context) {
+
+
+
     if (widget.data is Map) {
       final childList = <Widget>[];
       Text  title = Text("${widget.itemKey}  {${widget.data.length}}");
@@ -190,10 +167,7 @@ class _FJSONItemState extends State<FJSONItem> {
                 widget.itemKey == "newKey"?
                 FJsonField(
                   initialValue: widget.itemKey,
-                  fieldChanged: (val) {
-                    widget.keyChanged(widget.itemKey, val);
-                    setState(() {});
-                  },
+                  fieldChanged: (val) => widget.keyChanged(widget.itemKey, val, false),
                 )
                     :
                 title,
@@ -218,7 +192,7 @@ class _FJSONItemState extends State<FJSONItem> {
           itemKey: i,
           data: widget.data[i],
           valueChanged: onValueChanged,
-          keyChanged: (oldKey, newKey) {
+          keyChanged: (oldKey, newKey, toParent) {
 
           },
           paddingLeft: widget.paddingLeft + _space,
@@ -248,10 +222,7 @@ class _FJSONItemState extends State<FJSONItem> {
                 widget.itemKey == "newKey"?
                 FJsonField(
                   initialValue: widget.itemKey,
-                  fieldChanged: (val) {
-                    widget.keyChanged(widget.itemKey, val);
-                    setState(() {});
-                  },
+                  fieldChanged: (val) => widget.keyChanged(widget.itemKey, val, false),
                 )
                 :
                 title,
@@ -289,10 +260,7 @@ class _FJSONItemState extends State<FJSONItem> {
               if(widget.itemKey == "newKey")
                 FJsonField(
                   initialValue: widget.itemKey,
-                  fieldChanged: (val) {
-                    widget.keyChanged(widget.itemKey, val);
-                    setState(() {});
-                  },
+                  fieldChanged: (val) => widget.keyChanged(widget.itemKey, val, false)
                 )
               else
                 Text('${widget.itemKey} :')
@@ -301,10 +269,7 @@ class _FJSONItemState extends State<FJSONItem> {
               widget.isEditable ?
               FJsonField(
                 initialValue: widget.data,
-                fieldChanged: (val) {
-                  widget.valueChanged(widget.itemKey, val);
-                  setState(() {});
-                },
+                fieldChanged: (val) => widget.valueChanged(widget.itemKey, val, false),
               )
                   :
               Text(widget.data.toString()),

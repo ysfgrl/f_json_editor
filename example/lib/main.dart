@@ -14,10 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: ThemeData.dark(),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -32,6 +29,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final FJSONController _fjsonController = FJSONController();
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -42,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(widget.title),
       ),
       body: Center(
@@ -56,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: FJSONEditor(
+                  controller: _fjsonController,
                   title: Text("FJSON Example"),
                   actionCallback: (actionKey, jsonData) async {
                     if(actionKey == "copy"){
@@ -63,6 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         ClipboardData(text: jsonEncode(jsonData)),
                       );
                     }
+                  },
+                  valueChanged: (key, val) {
+                    debugPrint(_fjsonController.getJsonData.toString());
                   },
                   topActions: [
                     FJSONAction(
@@ -94,6 +96,17 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // _fjsonController.setJsonData(
+          //   {
+          //     "newKey1": "val"
+          //   }
+          // );
+          _fjsonController.setError(true);
+        },
+        child: Icon(Icons.edit),
       ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }

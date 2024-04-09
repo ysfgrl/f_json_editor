@@ -19,9 +19,12 @@ enum FJSONMenuTypes { map, list, field }
 
 
 typedef FieldValueChanged = void Function(dynamic val);
-typedef ItemValueChanged = void Function(dynamic key, dynamic val);
-typedef ItemKeyChanged = void Function(String oldKey, String newKey);
-typedef FJSONMenuEvent = void Function(FJSONMenuOptions options, dynamic key);
+typedef ItemValueChanged = void Function(dynamic key, dynamic val, bool toParent);
+typedef ItemValueChangedCallback = void Function(dynamic key, dynamic val);
+typedef ItemKeyChanged = void Function(String oldKey, String newKey, bool toParent);
+typedef ItemKeyChangedCallback = void Function(String oldKey, String newKey);
+typedef FJSONMenuEvent = void Function(FJSONMenuOptions options, dynamic key, bool toParent);
+typedef FJSONMenuEventCallback = void Function(FJSONMenuOptions options, dynamic key);
 typedef FJSONActionCallback = void Function(String actionKey, Map<String, dynamic> jsonData);
 
 

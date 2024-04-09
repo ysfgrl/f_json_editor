@@ -1,122 +1,113 @@
 library f_json_editor;
 
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 part 'f_json_const.dart';
 part 'f_json_item.dart';
 part 'f_json_fields.dart';
 part 'f_json_menu.dart';
+part 'f_json_controller.dart';
 
-class FJSONEditor extends StatefulWidget {
+class FJSONEditor extends StatelessWidget {
+
   const FJSONEditor({
     super.key,
     required this.jsonData,
-    required this.actionCallback,
+    this.actionCallback,
+    this.keyChanged,
+    this.valueChanged,
+    this.menuEvent,
+    this.controller,
     this.isEditable = false,
     this.title = const Text("JSON Editor"),
     this.topActions = const [],
-    this.showHeader = true
+    this.showHeader = true,
+
   });
+  final FJSONController? controller;
   final Map<String, dynamic> jsonData;
   final Text title;
   final bool showHeader;
   final bool isEditable;
   final List<FJSONAction> topActions;
-  final FJSONActionCallback actionCallback;
-  @override
-  State<FJSONEditor> createState() => _FJSONEditorState();
-}
-
-class _FJSONEditorState extends State<FJSONEditor> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  final FJSONActionCallback? actionCallback;
+  final ItemKeyChangedCallback? keyChanged;
+  final ItemValueChangedCallback? valueChanged;
+  final FJSONMenuEventCallback? menuEvent;
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(
-          width: 1,
-        ),
+    return ChangeNotifierProvider<FJSONNotifier>(
+      create: (context) => FJSONNotifier(
+          jsonData: jsonData,
+          controller: controller
       ),
-      child: SizedBox(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Visibility(
-              visible: widget.showHeader,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    border: null),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    children: [
-                      widget.title,
-                      const Spacer(),
-                      const SizedBox(width: 20),
-                      ...widget.topActions.map((e) => InkWell(
-                        onTap: () {
-                          widget.actionCallback(e.key, widget.jsonData);
-                        },
-                        child: Tooltip(
-                          message: e.label,
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8),
-                            child: e.icon,
-                          ),
-                        ),
-                      ))
-                      ,
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: FJSONItem(
-                    key: const Key("root"),
-                    data: widget.jsonData,
-                    itemKey: "root",
-                    paddingLeft: _space,
-                    isExpanded: true,
-                    valueChanged: (key, val) {
-                      // widget.jsonData[key] = val;
-                      // setState(() {});
-                    },
-                    keyChanged: (oldKey, newKey) {
+      builder: (context, child) {
+        var state = context.read<FJSONNotifier>();
 
-                    },
-                    menuEvent: (options, key) {
-                      setState(() {});
-                    },
-                    isEditable: widget.isEditable,
+        return Card.outlined(
+          child: SizedBox(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if(showHeader)
+                  Card.filled(
+                    margin: EdgeInsets.all(0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        children: [
+                          title,
+                          const Spacer(),
+                          const SizedBox(width: 20),
+                          ...topActions.map((e) => InkWell(
+                            onTap: () => actionCallback!=null ? actionCallback!(e.key, jsonData): null,
+                            child: Tooltip(
+                              message: e.label,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 8),
+                                child: e.icon,
+                              ),
+                            ),
+                          ))
+                          ,
+                        ],
+                      ),
+                    ),
+                  )
+                ,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: FJSONItem(
+                        key: const Key("root"),
+                        data: state.jsonData,
+                        itemKey: "root",
+                        paddingLeft: _space,
+                        isExpanded: true,
+                        valueChanged: (key, val, toParent){
+                          if(valueChanged != null) valueChanged!(key, val);
+                        },
+                        keyChanged: (oldKey, newKey, toParent) {
+                          if(keyChanged != null) keyChanged!(oldKey, newKey);
+                        },
+                        menuEvent: (options, key, toParent) {
+                          if(menuEvent != null) menuEvent!(options, key);
+                        },
+                        isEditable: isEditable,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
-
-
-
-
-
