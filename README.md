@@ -1,9 +1,8 @@
 
 # f_json_editor
 
-![FJSON Editor](https://raw.githubusercontent.com/ysfgrl/f_json_editor/master/Screenshot1.png)
-![FJSON Editor](https://raw.githubusercontent.com/ysfgrl/f_json_editor/master/Screenshot2.png)
-
+![FJSON Editor](https://raw.githubusercontent.com/ysfgrl/f_json_editor/master/screenshot/Screenshot1.png)
+![FJSON Editor](https://raw.githubusercontent.com/ysfgrl/f_json_editor/master/screenshot/Screenshot2.png)
 ## Getting started
 
 ```yaml
