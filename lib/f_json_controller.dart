@@ -4,14 +4,14 @@ part of 'f_json_editor.dart';
 class FJSONController{
   late final FJSONNotifier _state;
 
-  set setState(FJSONNotifier state){
+  void setState(FJSONNotifier state){
     _state = state;
   }
   void dispose() {
     _state.dispose();
   }
   void setJsonData(Map<String, dynamic> data) => _state.setData(data);
-  Map<String, dynamic> get getJsonData => _state.getData;
+  Map<String, dynamic>  getJsonData() => _state.getData();
 
   late bool error = false;
   bool get getError {
@@ -26,9 +26,9 @@ class FJSONNotifier extends ChangeNotifier{
      required this.jsonData,
     FJSONController? controller
   }): _controller = controller ?? FJSONController(){
-    _controller.setState = this;
+    _controller.setState(this);
   }
-
+  late int id=1;
   final FJSONController _controller;
   late bool error = false;
   bool get getError {
@@ -44,11 +44,12 @@ class FJSONNotifier extends ChangeNotifier{
   }
   Map<String, dynamic> jsonData;
 
-  Map<String, dynamic> get getData{
+  Map<String, dynamic> getData(){
     return jsonData;
   }
 
   void setData(Map<String, dynamic> data){
+    id +=1;
     jsonData = data;
     notifyListeners();
   }

@@ -11,7 +11,7 @@ part 'f_json_fields.dart';
 part 'f_json_menu.dart';
 part 'f_json_controller.dart';
 
-class FJSONEditor extends StatelessWidget {
+class FJSONEditor extends StatefulWidget {
 
   const FJSONEditor({
     super.key,
@@ -39,32 +39,37 @@ class FJSONEditor extends StatelessWidget {
   final FJSONMenuEventCallback? menuEvent;
 
   @override
+  State createState() => _FJSONEditorState();
+
+}
+
+
+class _FJSONEditorState extends State<FJSONEditor>{
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<FJSONNotifier>(
       create: (context) => FJSONNotifier(
-          jsonData: jsonData,
-          controller: controller
+          jsonData: widget.jsonData,
+          controller: widget.controller
       ),
       builder: (context, child) {
-        var state = context.read<FJSONNotifier>();
-
         return Card.outlined(
           child: SizedBox(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if(showHeader)
+                if(widget.showHeader)
                   Card.filled(
                     margin: EdgeInsets.all(0),
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Row(
                         children: [
-                          title,
+                          widget.title,
                           const Spacer(),
                           const SizedBox(width: 20),
-                          ...topActions.map((e) => InkWell(
-                            onTap: () => actionCallback!=null ? actionCallback!(e.key, jsonData): null,
+                          ...widget.topActions.map((e) => InkWell(
+                            onTap: () => widget.actionCallback!=null ? widget.actionCallback!(e.key, {}): null,
                             child: Tooltip(
                               message: e.label,
                               child: Padding(
@@ -83,23 +88,7 @@ class FJSONEditor extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
-                      child: FJSONItem(
-                        key: const Key("root"),
-                        data: state.jsonData,
-                        itemKey: "root",
-                        paddingLeft: _space,
-                        isExpanded: true,
-                        valueChanged: (key, val, toParent){
-                          if(valueChanged != null) valueChanged!(key, val);
-                        },
-                        keyChanged: (oldKey, newKey, toParent) {
-                          if(keyChanged != null) keyChanged!(oldKey, newKey);
-                        },
-                        menuEvent: (options, key, toParent) {
-                          if(menuEvent != null) menuEvent!(options, key);
-                        },
-                        isEditable: isEditable,
-                      ),
+                      child: child,
                     ),
                   ),
                 ),
@@ -108,6 +97,27 @@ class FJSONEditor extends StatelessWidget {
           ),
         );
       },
+      child: Consumer<FJSONNotifier>(
+        builder: (context, state, child) {
+          return FJSONItem(
+            key: Key("root${state.id.toString()}"),
+            data: state.getData(),
+            itemKey: "root",
+            paddingLeft: _space,
+            isExpanded: true,
+            valueChanged: (key, val, toParent){
+              if(widget.valueChanged != null) widget.valueChanged!(key, val);
+            },
+            keyChanged: (oldKey, newKey, toParent) {
+              if(widget.keyChanged != null) widget.keyChanged!(oldKey, newKey);
+            },
+            menuEvent: (options, key, toParent) {
+              if(widget.menuEvent != null) widget.menuEvent!(options, key);
+            },
+            isEditable: widget.isEditable,
+          );
+        },
+      ),
     );
   }
 }
